@@ -1,0 +1,42 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: test-v1
+  region: eu-central-1
+
+vpc:
+  securityGroup: sg-0f58eafd719d736c4
+  sharedNodeSecurityGroup: sg-00dd67c308bbd857f
+  subnets:
+    private:
+      eu-central-1a: { id: subnet-05557827f2c1d41a5 }
+      eu-central-1b: { id: subnet-0b65994d555d734ca }
+      eu-central-1c: { id: subnet-0fdd5d6d1e4d9d1d2 }
+
+kubernetesNetworkConfig:
+  serviceIPv4CIDR: 192.168.0.0/24
+
+iam:
+  withOIDC: true
+
+managedNodeGroups:
+  - name: test-v1-workers
+    minSize: 2
+    desiredCapacity: 2
+    maxSize: 4
+    instanceTypes: ["t3.small", "t3a.small"]
+    labels:
+      role: worker
+    spot: true
+    privateNetworking: true
+    volumeEncrypted: true
+    volumeSize: 8
+    volumeType: gp3
+    securityGroups:
+      attachIDs: ["sg-00dd67c308bbd857f"]
+    ssh:
+      publicKeyName: w33
+      allow: false
+    tags:
+      environment: sandbox
